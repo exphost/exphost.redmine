@@ -1,0 +1,36 @@
+- block:
+  - name: create directory
+    file:
+      path: "/app/{{app.value.redmine.user.user}}/{{item}}"
+      state: directory
+      owner: 999 #polkitd # temporary hardcoded for my image
+      group: 999 #input #temporary hardcoded for my image
+    loop:
+      - files
+      - sqlite
+  - name: copy service file
+    template:
+      src: redmine.service
+      dest: "/etc/systemd/system/{{app.value.redmine.user.user}}-redmine.service"
+    notify:
+      - daemon reload
+      - restart redmine
+  - meta: flush_handlers
+
+  - name: start redmine
+    service:
+      name: "{{app.value.redmine.user.user}}-redmine.service"
+      state: started
+      enabled: True
+
+  become: True
+- name: wait for redmine
+  uri:
+    url: "http://127.0.0.1:{{app.value.redmine.configs.port}}"
+    follow_redirects: none
+    method: GET
+  register: _result
+  until: _result.status == 200
+  retries: 60
+  delay: 5
+

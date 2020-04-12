@@ -1,0 +1,12 @@
+- name: daemon reload
+  systemd:
+    daemon_reload: yes
+    name: "{{app.value.redmine.user.user}}-redmine.service"
+  become: True
+
+- name: restart redmine
+  service:
+    name: "{{app.value.redmine.user.user}}-redmine.service"
+    state: restarted
+  become: True
+
