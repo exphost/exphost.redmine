@@ -50,8 +50,9 @@
     url: "http://127.0.0.1:{{app.value.redmine.configs.port}}"
     follow_redirects: none
     method: GET
+    status_code: 302
   register: _result
-  until: _result.status == 200
+  until: _result.status == 302
   retries: 60
   delay: 5
 
