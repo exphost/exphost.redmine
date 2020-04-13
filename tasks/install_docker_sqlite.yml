@@ -8,6 +8,7 @@
     loop:
       - files
       - sqlite
+      - repos
   - name: copy service file
     template:
       src: redmine.service
@@ -15,6 +16,26 @@
     notify:
       - daemon reload
       - restart redmine
+
+  - block:
+    - name: install git
+      yum:
+        name: git
+
+    - name: clone repo
+      git:
+        bare: True
+        repo: "{{item.url}}"
+        dest: "/app/{{app.value.redmine.user.user}}/repos/{{item.name}}"
+      loop: "{{app.value.redmine.configs.repos}}"
+    - name: update repos in cron
+      cron:
+        name: "update repo {{item.name}} for {{app.value.redmine.user.user}}"
+        minute: "*/5"
+        job: "cd /app/{{app.value.redmine.user.user}}/repos/{{item.name}} && git fetch origin +refs/heads/*:refs/heads/* && git reset --soft"
+      loop: "{{app.value.redmine.configs.repos}}"
+
+    when: app.value.redmine.configs.repos|default(False)
   - meta: flush_handlers
 
   - name: start redmine

@@ -6,7 +6,7 @@ Requires=docker.service
 [Service]
 TimeoutStartSec=0
 Restart=always
-ExecStart=/usr/bin/docker run --rm --name %n -p {{app.value.redmine.configs.port}}:3000 -v /app/{{app.value.redmine.user.user}}/sqlite:/usr/src/redmine/sqlite -v /app/{{app.value.redmine.user.user}}/files:/usr/src/redmine/files redmine
+ExecStart=/usr/bin/docker run --rm --name %n -p {{app.value.redmine.configs.port}}:3000 -v /app/{{app.value.redmine.user.user}}/sqlite:/usr/src/redmine/sqlite -v /app/{{app.value.redmine.user.user}}/files:/usr/src/redmine/files -v /app/{{app.value.redmine.user.user}}/repos:/usr/src/redmine/repos redmine
 ExecStop=/usr/bin/docker stop --name %n
 
 [Install]
