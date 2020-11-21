@@ -55,4 +55,5 @@
   until: _result.status in [200, 302]
   retries: 60
   delay: 5
+  when: not ansible_check_mode
 
